@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
+import { Http, Response, RequestOptions, Headers } from '@angular/http';
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
@@ -10,6 +10,9 @@ import 'rxjs/add/operator/map';
 export class DataService {
 
     private baseUrl = 'http://localhost:8080/api/'
+
+    private headers = new Headers({ 'Content-Type': 'application/json' });
+    private options = new RequestOptions({ headers: this.headers });
 
     constructor (private http: Http) {}
 
@@ -44,13 +47,22 @@ export class DataService {
     addRecord(endpoint: string, record:object): Observable<any> {
         let apiUrl = `${this.baseUrl}${endpoint}`;
         console.log(apiUrl)
-        return this.http.post(apiUrl, record)
+        return this.http.post(apiUrl, record, this.options)
             .map(this.extractData);
     }
 
 
     private extractData(res: Response) {
-        let results = res.json();
+        try{
+            var results = res.json();
+        }catch(e){
+            if(res.status == 200){
+                results = false;
+            }else{
+                Observable.throw(e);
+            }
+        }
+        
         return results || [];
     }
 

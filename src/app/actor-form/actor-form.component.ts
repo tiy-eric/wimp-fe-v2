@@ -8,21 +8,21 @@ import { DataService } from '../data.service'
 import { fadeInAnimation } from '../animations/fade-in.animation';
 
 @Component({
-  selector: 'app-movie-form',
-  templateUrl: './movie-form.component.html',
-  styleUrls: ['./movie-form.component.css'],
+  selector: 'app-actor-form',
+  templateUrl: './actor-form.component.html',
+  styleUrls: ['./actor-form.component.css'],
   animations: [fadeInAnimation]
 })
-export class MovieFormComponent implements OnInit {
+export class ActorFormComponent implements OnInit {
 
-  movieForm: NgForm;
-  @ViewChild('movieForm')
+  actorForm: NgForm;
+  @ViewChild('actorForm')
   currentForm: NgForm;
 
   successMessage: string;
   errorMessage: string;
 
-  movie: object;
+  actor: object;
 
   constructor(
     private dataService: DataService,
@@ -33,8 +33,8 @@ export class MovieFormComponent implements OnInit {
 
   getRecordForEdit(){
     this.route.params
-      .switchMap((params: Params) => this.dataService.getRecord("movies", +params['id']))
-      .subscribe(movie => this.movie = movie);
+      .switchMap((params: Params) => this.dataService.getRecord("actors", +params['id']))
+      .subscribe(actor => this.actor = actor);
   }
 
   ngOnInit() {
@@ -44,19 +44,19 @@ export class MovieFormComponent implements OnInit {
       });
   }
 
-  saveMovie(movieForm: NgForm){
-    if(typeof movieForm.value.id === "number"){
-      this.dataService.editRecord("movies", movieForm.value, movieForm.value.id)
+  saveActor(actorForm: NgForm){
+    if(typeof actorForm.value.id === "number"){
+      this.dataService.editRecord("actors", actorForm.value, actorForm.value.id)
           .subscribe(
-            movie => this.successMessage = "Record updated successfully",
+            actor => this.successMessage = "Record updated successfully",
             error =>  this.errorMessage = <any>error);
     }else{
-      this.dataService.addRecord("movies", movieForm.value)
+      this.dataService.addRecord("actors", actorForm.value)
           .subscribe(
-            student => this.successMessage = "Record added successfully",
+            actor => this.successMessage = "Record added successfully",
             error =>  this.errorMessage = <any>error);
-            this.movie = {};
-            this.movieForm.form.markAsPristine();
+            this.actor = {};
+            this.actorForm.form.markAsPristine();
     }
 
   }
@@ -66,15 +66,15 @@ export class MovieFormComponent implements OnInit {
   }
 
   formChanged() {
-    this.movieForm = this.currentForm;
-    this.movieForm.valueChanges
+    this.actorForm = this.currentForm;
+    this.actorForm.valueChanges
       .subscribe(
         data => this.onValueChanged()
       );
   }
 
   onValueChanged() {
-    let form = this.movieForm.form;
+    let form = this.actorForm.form;
 
     for (let field in this.formErrors) {
       // clear previous error message (if any)
@@ -91,28 +91,28 @@ export class MovieFormComponent implements OnInit {
   }
 
   formErrors = {
-    'title': '',
-    'distributor': '',
-    'budget': '',
-    'releaseDate': ''
+    'firstName': '',
+    'lastName': '',
+    'activeSinceYear': '',
+    'birthDate': ''
   };
 
   validationMessages = {
-    'title': {
-      'required': 'Movie title is required.',
-      'minlength': 'Movie title must be at least 2 characters long.',
-      'maxlength': 'Movie title cannot be more than 30 characters long.'
+    'firstName': {
+      'required': 'First Name is required.',
+      'minlength': 'First Name must be at least 2 characters long.',
+      'maxlength': 'First Name cannot be more than 30 characters long.'
     },
-    'distributor': {
+    'lastName': {
       'required': 'Distributor is required.',
       'minlength': 'Distributor must be at least 2 characters long.',
       'maxlength': 'Distributor cannot be more than 30 characters long.'
     },
-    'budget': {
-      'pattern': 'budget must be a number'
+    'activeSinceYear': {
+      'pattern': 'Active Since must be a a 4 digit year e.g. 1999'
     },
-    'releaseDate': {
-      'pattern': 'Release date should be in the following format: YYYY-MM-DD'
+    'birthDate': {
+      'pattern': 'Birth date should be in the following format: YYYY-MM-DD'
     }
   };
 
